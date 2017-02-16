@@ -1,0 +1,179 @@
+Caffe RIT User Guide (v0.5-01/2016)
+Shagan Sah (sxs4337@rit.edu)
+
+A.	Getting Started with RIT Research Computing Clusters (RC)
+1.	Get an RC account- http://rc.rit.edu/
+2.	Login to a RC node: Remote Desktop to ion.rc.rit.edu or ssh 
+<username>@ion.rc.rit.edu
+3.	Two ways to run scripts-
+a.	To start a session: sinteractive or sinteractive –C cuda
+Specify resources required: # of cores, RAM, time, etc. Start with default i.e. 2 cores, 
+4096 memory and 120 minutes. Judge the requirements based on the task. The less 
+resources requested, sooner it will get allocated. Use an educated guess and do not 
+request more than needed.
+b.	Use sbatch to schedule your job (Run grab_examples from your home directory to 
+see examples).
+4.	Load module: module load <name> Ex. module load matlab
+5.	Execute your scripts.
+6.	Other useful commands-
+a.	squeue : To list all jobs on the cluster
+b.	scancel <jobid> : To cancel a job
+c.	module unload <name> : To unload a module
+d.	module list : To list all loaded modules
+e.	module avail : List of all available modules
+f.	Email rc-help@rit.edu if any issues
+
+B.	Running MATLAB on RC
+1.	Start a RC session
+2.	Load MATLAB module: module load matlab
+3.	Start MATLAB:
+a.	MATLAB command line only: matlab –nodisplay
+b.	RUN GUI (make sure X11 is enabled in Putty): matlab
+4.	Execute your scripts.
+
+C.	Running Caffe on RC
+1.	Start a RC session
+2.	Load dependencies: module load caffe or module load caffe-cpu
+3.	Set the following environment paths:
+       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tools/glog/0.3.4/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tools/boost/1.58.0/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tools/opencv/3.0.0/lib
+If Anaconda installed in your home, also add equivalent of the following path: export 
+LD_LIBRARY_PATH=/home/sxs4337/anaconda/lib:$LD_LIBRARY_PATH 
+4.	Get Caffe: git clone https://github.com/BVLC/caffe.git in your home directory 
+(only required the first time).
+5.	Compile Caffe based in instruction on the Caffe documentation at-
+http://caffe.berkeleyvision.org/installation.html
+a.	Edit Makefile.config
+b.	Run the following commands- make all, make test, make runtest, make 
+pycaffe
+6.	Add equivalents of the following path variables-
+a.	export PYTHONPATH=/home/sxs4337/caffe/python
+b.	alias caffe='/home/sxs4337/caffe/build/tools/caffe' 
+7.	Run examples/scripts.
+8.	Note: All the paths needs to be added each time or could be added to the file ~/.bashrc to 
+save the trouble every time.
+
+D.	Running Caffe on MIL machines
+1.	Log in to one of the MIL machines-
+a.	mil-02l.main.ad.rit.edu
+b.	mil-08l.main.ad.rit.edu
+c.	mil-09l.main.ad.rit.edu
+d.	kgcoe-cuda-02.main.ad.rit.edu
+2.	Get Caffe: git clone https://github.com/BVLC/caffe.git in your home directory 
+(only required the first time).
+3.	Add the following five paths:
+export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda/
+export CUDA_BIN_PATH=/usr/local/cuda/
+export 
+CPLUS_INCLUDE_PATH=/usr/local/cuda/include:$CPLUS_INCLUDE_PATH
+export PATH=/usr/local/cuda/bin/:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-6.5/lib64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib:$LD_LIBRARY_PATH
+4.	Compile Caffe based in instruction on the Caffe documentation at-
+http://caffe.berkeleyvision.org/installation.html
+a.	Edit Makefile.config
+b.	Run the following commands- make all, make test, make runtest, make 
+pycaffe
+5.	Add equivalents of the following path variables-
+a.	export PYTHONPATH=/home/sxs4337/caffe/python
+b.	alias caffe='/home/sxs4337/caffe/build/tools/caffe' 
+6.	Run examples/scripts.
+7.	Note: All the paths needs to be added each time or could be added to the file ~/.bashrc to 
+save the trouble every time.
+
+E.	Installing Recurrent/LSTM Caffe 
+1.	Get Donahue fork of Caffe: git clone https://github.com/jeffdonahue/caffe in 
+your home directory.
+2.	Merge recurrent branch changes- git pull origin recurrent-v4
+3.	Follow steps 4 through 7 from D.
+
+F.	Install Caffe on independent Linux Machine and run an example
+1.	Get Caffe: git clone https://github.com/BVLC/caffe.git in your home directory.
+2.	Install dependencies:
+a.	CUDA: See http://docs.nvidia.com/cuda/cuda-getting-started-guide-
+for-linux/#axzz3xcWKIA94
+b.	Install OpenCV. Details in 
+http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_insta
+ll/linux_install.html
+c.	BLAS – ATLAS or OpenBLAS (For ATLAS RUN: sudo apt-get install 
+libatlas-base-dev)
+d.	Python: RUN sudo apt-get install python-dev or Install Anaconda 
+https://www.continuum.io/downloads
+e.	Others: Run sudo apt-get install libprotobuf-dev libleveldb-dev 
+libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev
+RUN sudo apt-get install libgflags-dev libgoogle-glog-dev 
+liblmdb-dev protobuf-compiler
+f.	Go to http://caffe.berkeleyvision.org/installation.html for more 
+information.
+3.	Compile Caffe
+a.	CD <caffe-root>
+b.	cp Makefile.config.example Makefile.config and make necessary changes.
+c.	make all
+d.	make test
+e.	make runtest
+f.	make pycaffe
+
+4.	MNIST-LeNET example:
+a.	RUN CD $CAFFE_ROOT from home.
+b.	RUN ./data/mnist/get_mnist.sh and ./examples/mnist/create_mnist.sh 
+to download and convert data.
+c.	Analyze and edit network architecture in .prototxt file: 
+$CAFFE_ROOT/examples/mnist/lenet_train_test.prototxt
+d.	Analyze and edit training and testing parameters in solver file:  
+$CAFFE_ROOT/examples/mnist/lenet_solver.prototxt
+(Solver file has parameter for CPU or GPU mode)
+e.	RUN script to train: ./examples/mnist/train_lenet.sh
+f.	To draw network architecture diagram: From <caffe-root> RUN python 
+./python/draw_net.py <prototxt file> <png file name>
+
+G.	Some known and common Caffe errors and fixes
+1.	Failure to import caffe library inside python:
+Add /caffe/python to your PYTHONPATH
+export PYTHONPATH=/home/sxs4337/caffe/python:$PYTHONPATH
+2.	No module named protobuf, although protobuf dependency installed. Maybe due to using 
+anaconda.
+pip install protobuf
+3.	Not finding libhdf5.so.xx where xx is version number normally 10.
+export LD_LIBRARY_PATH=/home/sxs4337/anaconda/lib:$LD_LIBRARY_PATH
+4.	Failure to draw network from python error in graphviz.
+install graphviz
+pip install pydot
+5.	Errors like not recognizing layer parameters.
+Importing wrong Caffe in Python
+export PYTHONPATH=/home/sxs4337/caffe/python
+6.	Error during make runtest like (on mil machines)-
+error while loading shared libraries: libopencv_core.so.2.4: cannot 
+open shared object file: No such file or directory
+Set following path:
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+7.	OpenCV errors like “undefined reference to cv::imread(cv::String const&, 
+int)” during make 
+In the Makefile, add opencv_imgcodecs in the end of the following line-
+LIBRARIES += glog gflags protobuf leveldb snappy \
+  lmdb boost_system hdf5_hl hdf5 m \
+  opencv_core opencv_highgui opencv_imgproc opencv_imgcodecs
+
+H.	Other useful commands
+1.	nvidia-smi: Gets status of GPU device
+2.	nvcc --version: Gets version of CUDA drivers installed
+3.	make clean: Clean any erroneous compilation.
+4.	find . -name "*.jpg" -type f –delete: Delete all ‘jpg’ files in a directory
+5.	du –sh: Get size of a directory
+6.	nproc: No. of CPU’s in a machine
+
+I.	Using GIT Hub
+1.	Clone the github repo into your system
+git clone https://github.com/USER-NAME/REPO-NAME.git
+2.	Set Github account username and email id for authentication
+git config --global user.email "your-email-id@example.com"
+git config --global user.name "Your-Github-UserName"
+git remote set-url origin https://Your-Github-
+UserNAme@github.com/Your-Github-UserNAme/REPO-NAME
+3.	Add all files and directory
+git add .
+4.	Write comment on commit
+git commit -m 'my first commit'
+5.	Push the code in Github repo
+git push -u origin master
